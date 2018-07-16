@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_1.dtd'><nta><declaration>// Place global declarations here.
+clock x;
+chan VPace, VSense;
+
+
+
+
+
+
+
+
+</declaration><template><name x="5" y="5">Pacemaker</name><parameter>const int LRI, const int HRI, const int VRP</parameter><declaration>// Place local declarations here.
+// Pacemaker
+int RI;
+bool hp;
+bool hpenable;
+bool started;</declaration><location id="id0" x="331" y="136"><name x="271" y="128">waitRI</name><label kind="invariant" x="271" y="153">x &lt;= RI</label></location><location id="id1" x="798" y="136"><name x="815" y="119">waitVRP</name><label kind="invariant" x="815" y="144">x &lt;= VRP</label></location><init ref="id0"/><transition><source ref="id1"/><target ref="id0"/><label kind="guard" x="433" y="263">x &gt;= VRP</label><label kind="assignment" x="543" y="263">hpenable = hp, started = true</label><nail x="670" y="246"/><nail x="458" y="246"/></transition><transition><source ref="id0"/><target ref="id1"/><label kind="guard" x="424" y="-9">x &gt;= RI</label><label kind="synchronisation" x="501" y="-9">VPace!</label><label kind="assignment" x="577" y="-9">x = 0, RI = LRI, hp = false</label><nail x="450" y="25"/><nail x="646" y="25"/></transition><transition><source ref="id0"/><target ref="id1"/><label kind="synchronisation" x="458" y="110">VSense?</label><label kind="assignment" x="543" y="110">x = 0,RI = HRI, hp = true</label></transition></template><template><name>Heart</name><parameter>const int minWait, const int maxWait</parameter><declaration>// Heart
+int count=0;
+
+</declaration><location id="id2" x="-68" y="-25"><name x="-85" y="-68">Ready</name><label kind="invariant" x="-102" y="0">x &lt;= maxWait</label></location><init ref="id2"/><transition><source ref="id2"/><target ref="id2"/><label kind="synchronisation" x="72" y="-96">VPace?</label><label kind="assignment" x="80" y="-64">x=0</label><nail x="72" y="16"/><nail x="72" y="16"/><nail x="72" y="-136"/></transition><transition><source ref="id2"/><target ref="id2"/><label kind="guard" x="-400" y="-80">x &gt;= minWait</label><label kind="synchronisation" x="-311" y="-46">VSense!</label><label kind="assignment" x="-288" y="-16">x = 0</label><nail x="-235" y="-97"/><nail x="-235" y="39"/></transition></template><system>// Place template instantiations here.
+A = Pacemaker(1000,1200,320); //Pacemaker(LRI,HRI,VRP)
+B = Heart(600,1000);//Heart(minWait,maxWait)
+// List one or more processes to be composed into a system.
+system A,B;
+    </system></nta>

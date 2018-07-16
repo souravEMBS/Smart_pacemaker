@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+clock x;
+chan VPace, VSense;
+
+
+
+
+
+
+
+</declaration>
+	<template>
+		<name x="5" y="5">Pacemaker</name>
+		<parameter>const int LRI, const int HRI, const int VRP</parameter>
+		<declaration>// Place local declarations here.
+// Pacemaker
+int RI;
+bool hp;
+bool hpenable;
+bool started;</declaration>
+		<location id="id0" x="-153" y="-34">
+			<name x="-213" y="-42">waitRI</name>
+			<label kind="invariant" x="-213" y="-17">x &lt;= RI</label>
+		</location>
+		<location id="id1" x="314" y="-34">
+			<name x="331" y="-51">waitVRP</name>
+			<label kind="invariant" x="331" y="-26">x &lt;= VRP</label>
+		</location>
+		<init ref="id0"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="-51" y="93">x &gt;= VRP</label>
+			<label kind="assignment" x="59" y="93">hpenable = hp, started = true</label>
+			<nail x="186" y="76"/>
+			<nail x="-26" y="76"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="guard" x="-60" y="-179">x &gt;= RI</label>
+			<label kind="synchronisation" x="17" y="-179">VPace!</label>
+			<label kind="assignment" x="93" y="-179">x = 0, RI = LRI, hp = false</label>
+			<nail x="-34" y="-145"/>
+			<nail x="162" y="-145"/>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="-26" y="-60">VSense?</label>
+			<label kind="assignment" x="59" y="-60">x = 0,RI = HRI, hp = true</label>
+		</transition>
+	</template>
+	<template>
+		<name>Heart</name>
+		<parameter>const int minWait, const int maxWait</parameter>
+		<declaration>// Heart
+
+</declaration>
+		<location id="id2" x="-68" y="-25">
+			<name x="-85" y="-68">Ready</name>
+			<label kind="invariant" x="-102" y="0">x &lt;= maxWait</label>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="85" y="-68">VPace?</label>
+			<label kind="assignment" x="93" y="-34">x = 0</label>
+			<nail x="68" y="-102"/>
+			<nail x="68" y="34"/>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id2"/>
+			<label kind="guard" x="-297" y="-93">x &gt;= minWait</label>
+			<label kind="synchronisation" x="-280" y="-51">VSense!</label>
+			<label kind="assignment" x="-272" y="-17">x = 0</label>
+			<nail x="-204" y="-102"/>
+			<nail x="-204" y="34"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+A = Pacemaker(1000,1200,320); //Pacemaker(LRI,HRI,VRP)
+B = Heart(600,1000);//Heart(minWait,maxWait)
+// List one or more processes to be composed into a system.
+system A,B;
+    </system>
+	<queries>
+		<query>
+			<formula>A[] ((A.waitRI &amp;&amp; A.started) imply x &gt;= A.VRP)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (A.hpenable imply x &lt;= A.HRI)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (!A.hpenable imply x &lt;= A.LRI)</formula>
+			<comment></comment>
+		</query>
+		<query>
+			<formula>A[] (not deadlock)</formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
